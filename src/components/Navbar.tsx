@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "Models", href: "#models" },
@@ -12,6 +14,8 @@ const navLinks = [
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -26,11 +30,9 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
-        <a href="#" className="flex items-center gap-2 group">
+        <a href="#" className="flex items-center gap-2">
           <Zap className="w-7 h-7 text-primary" />
-          <span className="font-display text-xl font-bold tracking-widest text-foreground">
-            VOLTARIS
-          </span>
+          <span className="font-display text-xl font-bold tracking-widest text-foreground">VOLTARIS</span>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -43,15 +45,18 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <Button variant="neon" size="sm">
-            Book a Test Drive
-          </Button>
+          {user ? (
+            <Button variant="neon" size="sm" onClick={() => navigate("/dashboard")}>
+              <User className="w-4 h-4 mr-1" /> Dashboard
+            </Button>
+          ) : (
+            <Button variant="neon" size="sm" onClick={() => navigate("/auth")}>
+              Book a Test Drive
+            </Button>
+          )}
         </div>
 
-        <button
-          className="md:hidden text-foreground"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
+        <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -69,9 +74,15 @@ const Navbar = () => {
                 {link.label}
               </a>
             ))}
-            <Button variant="neon" size="sm" className="mt-2">
-              Book a Test Drive
-            </Button>
+            {user ? (
+              <Button variant="neon" size="sm" onClick={() => { setMobileOpen(false); navigate("/dashboard"); }}>
+                <User className="w-4 h-4 mr-1" /> Dashboard
+              </Button>
+            ) : (
+              <Button variant="neon" size="sm" onClick={() => { setMobileOpen(false); navigate("/auth"); }}>
+                Book a Test Drive
+              </Button>
+            )}
           </div>
         </div>
       )}
